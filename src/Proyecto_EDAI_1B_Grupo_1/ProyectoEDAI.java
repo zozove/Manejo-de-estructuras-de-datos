@@ -1,4 +1,5 @@
 package Proyecto_EDAI_1B_Grupo_1;
+
 import java.util.Scanner;
 
 public class ProyectoEDAI {
@@ -41,14 +42,18 @@ class ControladorMenu {
         this.activo = activo;
     }
 
+    private void imprimirEncabezadoInicial() {
+        System.out.println("================= PROYECTO EDAI 1B - GRUPO 1 =================");
+        System.out.println("Integrantes:");
+        System.out.println("  Zoe Cartuche       | Martin Correa | Dilan Leon");
+        System.out.println("  Alexis Liquinchana | Inti Males    | Dominique Vallejo");
+        System.out.println("==============================================================");
+    }
+
     public void iniciar(Scanner scanner) {
-    	System.out.println("================= PROYECTO EDAI 1B - GRUPO 1 ===============\n");
-    	System.out.println("Integrantes:");
-    	
-    	System.out.println("  Zoe Cartuche       | Martin Correa | Dilan Leon        |");
-        System.out.println("  Alexis Liquinchana | Inti Males    | Dominique Vallejo |\n");
-    	System.out.println("============================================================");
-    	int opcion = 0;
+        imprimirEncabezadoInicial();
+
+        int opcion = 0;
         do {
             System.out.println("\n=== MENU PRINCIPAL ===");
             System.out.println("1. Arreglos unidimensionales");
@@ -107,11 +112,11 @@ class ControladorMenu {
             if (op == 1) {
                 int cap = leerEnteroRango(scanner, "Capacidad (1-20): ", 1, 20);
                 int cant = leerEnteroRango(scanner, "Cantidad inicial (0-" + cap + "): ", 0, cap);
-                int[] valores = new int[cant];
+                int[] arregloValores = new int[cant];
                 for (int i = 0; i < cant; i++) {
-                    valores[i] = leerEntero(scanner, "Valor [" + i + "]: ");
+                    arregloValores[i] = leerEntero(scanner, "Valor P[" + i + "]= ");
                 }
-                arregloSimple.inicializar(cap, valores, cant);
+                arregloSimple.inicializar(cap, arregloValores, cant);
             } else {
                 if (op == 2) {
                     arregloSimple.recorrerYMostrar();
@@ -146,8 +151,10 @@ class ControladorMenu {
             System.out.println("4. Consultar cima (peek)");
             System.out.println("5. Comprobar vacia / llena");
             System.out.println("6. Mostrar contenido (LIFO)");
-            System.out.println("7. Volver");
-            op = leerEnteroRango(scanner, "Opcion (1-7): ", 1, 7);
+            System.out.println("7. Convertir expresion infija a postfija");
+            System.out.println("8. Evaluar expresion postfija");
+            System.out.println("9. Volver");
+            op = leerEnteroRango(scanner, "Opcion (1-9): ", 1, 9);
 
             if (op == 1) {
                 int cap = leerEnteroRango(scanner, "Capacidad (1-20): ", 1, 20);
@@ -168,13 +175,25 @@ class ControladorMenu {
                             } else {
                                 if (op == 6) {
                                     pila.mostrarLIFO();
+                                } else {
+                                    if (op == 7) {
+                                        System.out.print("Ingrese expresion infija (ej. (3+4)*2): ");
+                                        String exprInfija = scanner.nextLine();
+                                        pila.infijaAPostfija(exprInfija);
+                                    } else {
+                                        if (op == 8) {
+                                            System.out.print("Ingrese expresion postfija (ej. 34+2*): ");
+                                            String exprPostfija = scanner.nextLine();
+                                            pila.evaluarPostfija(exprPostfija);
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        } while (op != 7);
+        } while (op != 9);
     }
 
     private void menuCola(Scanner scanner) {
@@ -417,8 +436,8 @@ class ControladorMenu {
 // ============================================================================
 class ArregloUnidimensional {
 
-    private int[] elementos;
-    private boolean[] ocupado;
+    private int[] arregloElementos;
+    private boolean[] arregloOcupado;
     private int capacidad;
     private int cantidad;
 
@@ -427,25 +446,25 @@ class ArregloUnidimensional {
             cap = 1;
         }
         this.capacidad = cap;
-        this.elementos = new int[cap];
-        this.ocupado = new boolean[cap];
+        this.arregloElementos = new int[cap];
+        this.arregloOcupado = new boolean[cap];
         this.cantidad = 0;
     }
 
-    public int[] getElementos() {
-        return this.elementos;
+    public int[] getArregloElementos() {
+        return this.arregloElementos;
     }
 
-    public void setElementos(int[] elementos) {
-        this.elementos = elementos;
+    public void setArregloElementos(int[] arregloElementos) {
+        this.arregloElementos = arregloElementos;
     }
 
-    public boolean[] getOcupado() {
-        return this.ocupado;
+    public boolean[] getArregloOcupado() {
+        return this.arregloOcupado;
     }
 
-    public void setOcupado(boolean[] ocupado) {
-        this.ocupado = ocupado;
+    public void setArregloOcupado(boolean[] arregloOcupado) {
+        this.arregloOcupado = arregloOcupado;
     }
 
     public int getCapacidad() {
@@ -465,37 +484,36 @@ class ArregloUnidimensional {
     }
 
     private void imprimirEstadoArreglo(String etiqueta) {
-        System.out.print(etiqueta + " (cap=" + getCapacidad() + ", cant=" + getCantidad() + "): ");
+        System.out.println("  " + etiqueta + " (cap=" + getCapacidad() + ", cant=" + getCantidad() + "):");
         for (int i = 0; i < getCapacidad(); i++) {
-            if (getOcupado()[i]) {
-                System.out.print("idx" + i + "=" + getElementos()[i] + "[OCUPADO] ");
+            if (getArregloOcupado()[i]) {
+                System.out.println("    P[" + i + "]= " + getArregloElementos()[i] + " [OCUPADO]");
             } else {
-                System.out.print("idx" + i + "=-[LIBRE] ");
+                System.out.println("    P[" + i + "]= - [LIBRE]");
             }
         }
-        System.out.println();
     }
 
-    public void inicializar(int nuevaCap, int[] valores, int cantIni) {
+    public void inicializar(int nuevaCap, int[] arregloValores, int cantIni) {
         System.out.println("\n1. Estado inicial:");
         imprimirEstadoArreglo("Antes");
 
         System.out.println("2. Ejecucion paso a paso:");
         setCapacidad(nuevaCap);
-        setElementos(new int[nuevaCap]);
-        setOcupado(new boolean[nuevaCap]);
+        setArregloElementos(new int[nuevaCap]);
+        setArregloOcupado(new boolean[nuevaCap]);
         setCantidad(0);
 
         int i = 0;
         for (i = 0; i < cantIni && i < nuevaCap; i++) {
-            getElementos()[i] = valores[i];
-            getOcupado()[i] = true;
+            getArregloElementos()[i] = arregloValores[i];
+            getArregloOcupado()[i] = true;
             setCantidad(getCantidad() + 1);
-            System.out.println("  Paso " + (i + 1) + ": asigna " + valores[i] + " en indice " + i);
+            System.out.println("  Paso " + (i + 1) + ": P[" + i + "]= " + arregloValores[i]);
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  i=" + i + ", nuevaCap=" + nuevaCap + ", cantIni=" + cantIni + ", cantidad=" + getCantidad());
+        System.out.println("  i= " + i + ", nuevaCap= " + nuevaCap + ", cantIni= " + cantIni + ", cantidad= " + getCantidad());
 
         System.out.println("4. Estado final:");
         imprimirEstadoArreglo("Despues");
@@ -511,15 +529,15 @@ class ArregloUnidimensional {
         }
         int i = 0;
         for (i = 0; i < getCapacidad(); i++) {
-            if (getOcupado()[i]) {
-                System.out.println("  Posicion " + i + ": ocupada, valor=" + getElementos()[i]);
+            if (getArregloOcupado()[i]) {
+                System.out.println("  P[" + i + "]= " + getArregloElementos()[i] + " [OCUPADO]");
             } else {
-                System.out.println("  Posicion " + i + ": disponible");
+                System.out.println("  P[" + i + "]= - [DISPONIBLE]");
             }
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  i=" + i + ", capacidad=" + getCapacidad() + ", cantidad=" + getCantidad());
+        System.out.println("  i= " + i + ", capacidad= " + getCapacidad() + ", cantidad= " + getCantidad());
 
         System.out.println("4. Estado final:");
         imprimirEstadoArreglo("Final");
@@ -527,7 +545,7 @@ class ArregloUnidimensional {
 
     public void insertar(int valor, int pos) {
         System.out.println("\n1. Estado inicial:");
-        imprimirEstadoArreglo("Antes de insertar " + valor + " en pos " + pos);
+        imprimirEstadoArreglo("Antes de insertar " + valor + " en P[" + pos + "]");
 
         System.out.println("2. Ejecucion paso a paso:");
         int i = 0;
@@ -536,23 +554,23 @@ class ArregloUnidimensional {
             System.out.println("  Error: arreglo lleno.");
         } else {
             if (pos < 0 || pos > getCantidad()) {
-                System.out.println("  Error: posicion invalida (" + pos + ").");
+                System.out.println("  Error: posicion invalida P[" + pos + "].");
             } else {
                 for (i = getCantidad() - 1; i >= pos; i--) {
-                    getElementos()[i + 1] = getElementos()[i];
-                    getOcupado()[i + 1] = true;
+                    getArregloElementos()[i + 1] = getArregloElementos()[i];
+                    getArregloOcupado()[i + 1] = true;
                     desplazados++;
-                    System.out.println("  Desplaza " + getElementos()[i] + " de indice " + i + " a " + (i + 1));
+                    System.out.println("  Desplaza de P[" + i + "] a P[" + (i + 1) + "]= " + getArregloElementos()[i + 1]);
                 }
-                getElementos()[pos] = valor;
-                getOcupado()[pos] = true;
+                getArregloElementos()[pos] = valor;
+                getArregloOcupado()[pos] = true;
                 setCantidad(getCantidad() + 1);
-                System.out.println("  Inserta " + valor + " en indice " + pos);
+                System.out.println("  Inserta P[" + pos + "]= " + valor);
             }
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  valor=" + valor + ", pos=" + pos + ", i=" + i + ", desplazados=" + desplazados + ", cantidad=" + getCantidad());
+        System.out.println("  valor= " + valor + ", pos= " + pos + ", i= " + i + ", desplazados= " + desplazados + ", cantidad= " + getCantidad());
 
         System.out.println("4. Estado final:");
         imprimirEstadoArreglo("Despues de insertar");
@@ -560,7 +578,7 @@ class ArregloUnidimensional {
 
     public void eliminar(int pos) {
         System.out.println("\n1. Estado inicial:");
-        imprimirEstadoArreglo("Antes de eliminar pos " + pos);
+        imprimirEstadoArreglo("Antes de eliminar P[" + pos + "]");
 
         System.out.println("2. Ejecucion paso a paso:");
         int eliminado = 0;
@@ -570,25 +588,25 @@ class ArregloUnidimensional {
             System.out.println("  Error: arreglo vacio.");
         } else {
             if (pos < 0 || pos >= getCantidad()) {
-                System.out.println("  Error: posicion invalida (" + pos + ").");
+                System.out.println("  Error: posicion invalida P[" + pos + "].");
             } else {
-                eliminado = getElementos()[pos];
-                System.out.println("  Elimina " + eliminado + " en posicion " + pos);
+                eliminado = getArregloElementos()[pos];
+                System.out.println("  Elimina P[" + pos + "]= " + eliminado);
                 for (i = pos; i < getCantidad() - 1; i++) {
-                    getElementos()[i] = getElementos()[i + 1];
-                    getOcupado()[i] = true;
+                    getArregloElementos()[i] = getArregloElementos()[i + 1];
+                    getArregloOcupado()[i] = true;
                     movidos++;
-                    System.out.println("  Reorganiza: mueve " + getElementos()[i + 1] + " de indice " + (i + 1) + " a " + i);
+                    System.out.println("  Reorganiza: P[" + i + "]= " + getArregloElementos()[i] + " (desde P[" + (i + 1) + "])");
                 }
                 int ultimo = getCantidad() - 1;
-                getElementos()[ultimo] = 0;
-                getOcupado()[ultimo] = false;
+                getArregloElementos()[ultimo] = 0;
+                getArregloOcupado()[ultimo] = false;
                 setCantidad(getCantidad() - 1);
             }
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  pos=" + pos + ", eliminado=" + eliminado + ", i=" + i + ", movidos=" + movidos + ", cantidad=" + getCantidad());
+        System.out.println("  pos= " + pos + ", eliminado= " + eliminado + ", i= " + i + ", movidos= " + movidos + ", cantidad= " + getCantidad());
 
         System.out.println("4. Estado final:");
         imprimirEstadoArreglo("Despues de eliminar");
@@ -606,26 +624,26 @@ class ArregloUnidimensional {
             System.out.println("  Arreglo vacio. Valor no encontrado.");
         } else {
             for (i = 0; i < getCantidad(); i++) {
-                if (getElementos()[i] == objetivo) {
+                if (getArregloElementos()[i] == objetivo) {
                     hallados++;
                     if (posiciones.length() > 0) {
                         posiciones = posiciones + ", ";
                     }
-                    posiciones = posiciones + i;
-                    System.out.println("  Coincidencia en indice " + i + " (valor=" + getElementos()[i] + ")");
+                    posiciones = posiciones + "P[" + i + "]";
+                    System.out.println("  Coincidencia en P[" + i + "]= " + getArregloElementos()[i]);
                 } else {
-                    System.out.println("  Indice " + i + " (valor=" + getElementos()[i] + ") no coincide");
+                    System.out.println("  P[" + i + "]= " + getArregloElementos()[i] + " (no coincide)");
                 }
             }
             if (hallados > 0) {
-                System.out.println("  Valor " + objetivo + " encontrado en posicion(es): " + posiciones);
+                System.out.println("  Valor " + objetivo + " encontrado en: " + posiciones);
             } else {
                 System.out.println("  Valor " + objetivo + " no encontrado.");
             }
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  objetivo=" + objetivo + ", i=" + i + ", hallados=" + hallados + ", posiciones=" + posiciones);
+        System.out.println("  objetivo= " + objetivo + ", i= " + i + ", hallados= " + hallados + ", posiciones= " + posiciones);
 
         System.out.println("4. Estado final:");
         imprimirEstadoArreglo("Final");
@@ -633,11 +651,11 @@ class ArregloUnidimensional {
 }
 
 // ============================================================================
-// CASO 2: TAD PILA (LIFO)
+// CASO 2: TAD PILA (LIFO) + EXPRESIONES POSTFIJAS
 // ============================================================================
 class PilaTAD {
 
-    private int[] datos;
+    private int[] arregloDatos;
     private int cima;
     private int capacidad;
 
@@ -646,16 +664,16 @@ class PilaTAD {
             cap = 1;
         }
         this.capacidad = cap;
-        this.datos = new int[cap];
+        this.arregloDatos = new int[cap];
         this.cima = -1;
     }
 
-    public int[] getDatos() {
-        return this.datos;
+    public int[] getArregloDatos() {
+        return this.arregloDatos;
     }
 
-    public void setDatos(int[] datos) {
-        this.datos = datos;
+    public void setArregloDatos(int[] arregloDatos) {
+        this.arregloDatos = arregloDatos;
     }
 
     public int getCima() {
@@ -683,14 +701,14 @@ class PilaTAD {
     }
 
     private void imprimirPila(String etiqueta) {
-        System.out.print(etiqueta + " (cima=" + getCima() + ", cap=" + getCapacidad() + "): [");
-        for (int i = 0; i <= getCima(); i++) {
-            System.out.print(getDatos()[i]);
-            if (i < getCima()) {
-                System.out.print(", ");
+        System.out.println("  " + etiqueta + " (cima= P[" + getCima() + "], cap= " + getCapacidad() + "):");
+        if (estaVacia()) {
+            System.out.println("    (vacia)");
+        } else {
+            for (int i = getCima(); i >= 0; i--) {
+                System.out.println("    P[" + i + "]= " + getArregloDatos()[i]);
             }
         }
-        System.out.println("]");
     }
 
     public void inicializar(int cap) {
@@ -699,12 +717,12 @@ class PilaTAD {
 
         System.out.println("2. Ejecucion paso a paso:");
         setCapacidad(cap);
-        setDatos(new int[cap]);
+        setArregloDatos(new int[cap]);
         setCima(-1);
-        System.out.println("  Pila reiniciada con capacidad " + cap + " y cima = -1.");
+        System.out.println("  Pila reiniciada con capacidad " + cap + " y cima= P[-1].");
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  cap=" + cap + ", cima=" + getCima());
+        System.out.println("  cap= " + cap + ", cima= " + getCima());
 
         System.out.println("4. Estado final:");
         imprimirPila("Despues");
@@ -720,12 +738,12 @@ class PilaTAD {
         } else {
             int nuevaCima = getCima() + 1;
             setCima(nuevaCima);
-            getDatos()[nuevaCima] = valor;
-            System.out.println("  Apila " + valor + " en cima=" + nuevaCima);
+            getArregloDatos()[nuevaCima] = valor;
+            System.out.println("  Apila P[" + nuevaCima + "]= " + valor);
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  valor=" + valor + ", cima=" + getCima());
+        System.out.println("  valor= " + valor + ", cima= " + getCima());
 
         System.out.println("4. Estado final:");
         imprimirPila("Despues de push");
@@ -740,14 +758,14 @@ class PilaTAD {
         if (estaVacia()) {
             System.out.println("  Error: subdesbordamiento, pila vacia.");
         } else {
-            sacado = getDatos()[getCima()];
-            getDatos()[getCima()] = 0;
+            sacado = getArregloDatos()[getCima()];
+            getArregloDatos()[getCima()] = 0;
             setCima(getCima() - 1);
-            System.out.println("  Desapila " + sacado + "; nueva cima=" + getCima());
+            System.out.println("  Desapila " + sacado + "; nueva cima= P[" + getCima() + "]");
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  sacado=" + sacado + ", cima=" + getCima());
+        System.out.println("  sacado= " + sacado + ", cima= " + getCima());
 
         System.out.println("4. Estado final:");
         imprimirPila("Despues de pop");
@@ -762,12 +780,12 @@ class PilaTAD {
         if (estaVacia()) {
             System.out.println("  Pila vacia: no hay cima.");
         } else {
-            tope = getDatos()[getCima()];
-            System.out.println("  Cima actual (indice " + getCima() + ") = " + tope);
+            tope = getArregloDatos()[getCima()];
+            System.out.println("  Cima actual P[" + getCima() + "]= " + tope);
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  cima=" + getCima() + ", tope=" + tope);
+        System.out.println("  cima= " + getCima() + ", tope= " + tope);
 
         System.out.println("4. Estado final:");
         imprimirPila("Final");
@@ -780,10 +798,10 @@ class PilaTAD {
         System.out.println("2. Ejecucion paso a paso:");
         boolean v = estaVacia();
         boolean l = estaLlena();
-        System.out.println("  estaVacia=" + v + ", estaLlena=" + l);
+        System.out.println("  estaVacia= " + v + ", estaLlena= " + l);
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  cima=" + getCima() + ", capacidad=" + getCapacidad() + ", vacia=" + v + ", llena=" + l);
+        System.out.println("  cima= " + getCima() + ", capacidad= " + getCapacidad() + ", vacia= " + v + ", llena= " + l);
 
         System.out.println("4. Estado final:");
         imprimirPila("Final");
@@ -800,16 +818,236 @@ class PilaTAD {
             System.out.println("  Pila vacia.");
         } else {
             for (i = getCima(); i >= 0; i--) {
-                System.out.println("  Orden LIFO #" + orden + " (idx " + i + "): " + getDatos()[i]);
+                System.out.println("  Orden LIFO #" + orden + " -> P[" + i + "]= " + getArregloDatos()[i]);
                 orden++;
             }
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  i=" + i + ", orden=" + orden + ", cima=" + getCima());
+        System.out.println("  i= " + i + ", orden= " + orden + ", cima= " + getCima());
 
         System.out.println("4. Estado final:");
         imprimirPila("Final LIFO");
+    }
+
+    private int precedencia(char op) {
+        if (op == '^') {
+            return 3;
+        } else {
+            if (op == '*' || op == '/') {
+                return 2;
+            } else {
+                if (op == '+' || op == '-') {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        }
+    }
+
+    private boolean esOperador(char c) {
+        return c == '+' || c == '-' || c == '*' || c == '/' || c == '^';
+    }
+
+    private boolean esOperando(char c) {
+        return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+    }
+
+    public void infijaAPostfija(String infija) {
+        System.out.println("\n1. Estado inicial:");
+        System.out.println("  Expresion infija: \"" + infija + "\"");
+        System.out.println("  Pila de operadores vacia (tope= P[-1])");
+
+        System.out.println("2. Ejecucion paso a paso:");
+        int n = infija.length();
+        if (n == 0) {
+            System.out.println("  Error: expresion vacia.");
+            System.out.println("3. Variables auxiliares:");
+            System.out.println("  n= 0, tope= P[-1], postfija= \"\"");
+            System.out.println("4. Estado final:");
+            System.out.println("  Expresion postfija: \"\"");
+            return;
+        }
+
+        char[] arregloPilaOp = new char[n];
+        int tope = -1;
+        String postfija = "";
+        boolean error = false;
+        int i = 0;
+
+        for (i = 0; i < n && !error; i++) {
+            char c = infija.charAt(i);
+            if (c != ' ') {
+                if (esOperando(c)) {
+                    postfija = postfija + c;
+                    System.out.println("  Lee '" + c + "' (operando) -> agrega a salida: \"" + postfija + "\"");
+                } else {
+                    if (c == '(') {
+                        tope++;
+                        arregloPilaOp[tope] = c;
+                        System.out.println("  Lee '(' -> apila en P[" + tope + "]= '('");
+                    } else {
+                        if (c == ')') {
+                            while (tope >= 0 && arregloPilaOp[tope] != '(') {
+                                char sacado = arregloPilaOp[tope];
+                                tope--;
+                                postfija = postfija + sacado;
+                                System.out.println("  Desapila '" + sacado + "' hasta '(' -> salida: \"" + postfija + "\"");
+                            }
+                            if (tope < 0) {
+                                System.out.println("  Error: parentesis de cierre sin apertura.");
+                                error = true;
+                            } else {
+                                tope--;
+                                System.out.println("  Descarta '(' de la pila (tope= P[" + tope + "])");
+                            }
+                        } else {
+                            if (esOperador(c)) {
+                                while (tope >= 0 && esOperador(arregloPilaOp[tope]) && precedencia(arregloPilaOp[tope]) >= precedencia(c)) {
+                                    char sacado = arregloPilaOp[tope];
+                                    tope--;
+                                    postfija = postfija + sacado;
+                                    System.out.println("  Mayor/igual precedencia: desapila '" + sacado + "' -> salida: \"" + postfija + "\"");
+                                }
+                                tope++;
+                                arregloPilaOp[tope] = c;
+                                System.out.println("  Apila operador P[" + tope + "]= '" + c + "'");
+                            } else {
+                                System.out.println("  Error: caracter invalido '" + c + "'.");
+                                error = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        while (tope >= 0 && !error) {
+            char sacado = arregloPilaOp[tope];
+            tope--;
+            if (sacado == '(') {
+                System.out.println("  Error: parentesis '(' sin cerrar.");
+                error = true;
+            } else {
+                postfija = postfija + sacado;
+                System.out.println("  Vacia pila: desapila '" + sacado + "' -> salida: \"" + postfija + "\"");
+            }
+        }
+
+        System.out.println("3. Variables auxiliares:");
+        System.out.println("  i= " + i + ", tope= P[" + tope + "], error= " + error + ", postfija= \"" + postfija + "\"");
+
+        System.out.println("4. Estado final:");
+        if (error) {
+            System.out.println("  Conversion abortada por error de sintaxis.");
+        } else {
+            System.out.println("  Expresion postfija resultante: " + postfija);
+        }
+    }
+
+    public void evaluarPostfija(String postfija) {
+        System.out.println("\n1. Estado inicial:");
+        System.out.println("  Expresion postfija: \"" + postfija + "\"");
+        System.out.println("  Pila de operandos vacia (tope= P[-1])");
+
+        System.out.println("2. Ejecucion paso a paso:");
+        int n = postfija.length();
+        if (n == 0) {
+            System.out.println("  Error: expresion vacia.");
+            System.out.println("3. Variables auxiliares:");
+            System.out.println("  n= 0, tope= P[-1], resultado= 0");
+            System.out.println("4. Estado final:");
+            System.out.println("  Evaluacion sin resultado.");
+            return;
+        }
+
+        long[] arregloPilaVal = new long[n];
+        int tope = -1;
+        boolean error = false;
+        int i = 0;
+
+        for (i = 0; i < n && !error; i++) {
+            char c = postfija.charAt(i);
+            if (c != ' ') {
+                if (c >= '0' && c <= '9') {
+                    long num = c - '0';
+                    tope++;
+                    arregloPilaVal[tope] = num;
+                    System.out.println("  Lee digito '" + c + "' -> apila P[" + tope + "]= " + num);
+                } else {
+                    if (esOperador(c)) {
+                        if (tope < 1) {
+                            System.out.println("  Error: faltan operandos para el operador '" + c + "'.");
+                            error = true;
+                        } else {
+                            long b = arregloPilaVal[tope];
+                            tope--;
+                            long a = arregloPilaVal[tope];
+                            tope--;
+                            long resOp = 0L;
+
+                            if (c == '+') {
+                                resOp = a + b;
+                            } else {
+                                if (c == '-') {
+                                    resOp = a - b;
+                                } else {
+                                    if (c == '*') {
+                                        resOp = a * b;
+                                    } else {
+                                        if (c == '/') {
+                                            if (b == 0) {
+                                                System.out.println("  Error: division por cero.");
+                                                error = true;
+                                            } else {
+                                                resOp = a / b;
+                                            }
+                                        } else {
+                                            if (c == '^') {
+                                                resOp = 1L;
+                                                for (int p = 0; p < b; p++) {
+                                                    resOp = resOp * a;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (!error) {
+                                tope++;
+                                arregloPilaVal[tope] = resOp;
+                                System.out.println("  Aplica '" + c + "': " + a + " " + c + " " + b + " = " + resOp + " -> apila P[" + tope + "]= " + resOp);
+                            }
+                        }
+                    } else {
+                        System.out.println("  Error: simbolo no valido '" + c + "' (use digitos 0-9 y operadores + - * / ^).");
+                        error = true;
+                    }
+                }
+            }
+        }
+
+        long resultadoFinal = 0L;
+        if (!error) {
+            if (tope != 0) {
+                System.out.println("  Error: expresion mal formada (sobran operandos en la pila).");
+                error = true;
+            } else {
+                resultadoFinal = arregloPilaVal[tope];
+            }
+        }
+
+        System.out.println("3. Variables auxiliares:");
+        System.out.println("  i= " + i + ", tope= P[" + tope + "], error= " + error + ", resultadoFinal= " + resultadoFinal);
+
+        System.out.println("4. Estado final:");
+        if (error) {
+            System.out.println("  Evaluacion abortada por error en la expresion.");
+        } else {
+            System.out.println("  Resultado de la evaluacion postfija = " + resultadoFinal);
+        }
     }
 }
 
@@ -818,7 +1056,7 @@ class PilaTAD {
 // ============================================================================
 class ColaTAD {
 
-    private int[] datos;
+    private int[] arregloDatos;
     private int frente;
     private int finalIdx;
     private int tamano;
@@ -830,19 +1068,19 @@ class ColaTAD {
             cap = 1;
         }
         this.capacidad = cap;
-        this.datos = new int[cap];
+        this.arregloDatos = new int[cap];
         this.frente = 0;
         this.finalIdx = -1;
         this.tamano = 0;
         this.circular = esCircular;
     }
 
-    public int[] getDatos() {
-        return this.datos;
+    public int[] getArregloDatos() {
+        return this.arregloDatos;
     }
 
-    public void setDatos(int[] datos) {
-        this.datos = datos;
+    public void setArregloDatos(int[] arregloDatos) {
+        this.arregloDatos = arregloDatos;
     }
 
     public int getFrente() {
@@ -898,20 +1136,20 @@ class ColaTAD {
     }
 
     private void imprimirCola(String etiqueta) {
-        System.out.print(etiqueta + " (frente=" + getFrente() + ", final=" + getFinalIdx() + ", tam=" + getTamano() + "/" + getCapacidad() + "): [");
-        int idx = getFrente();
-        for (int k = 0; k < getTamano(); k++) {
-            System.out.print(getDatos()[idx]);
-            if (k < getTamano() - 1) {
-                System.out.print(", ");
-            }
-            if (isCircular()) {
-                idx = (idx + 1) % getCapacidad();
-            } else {
-                idx++;
+        System.out.println("  " + etiqueta + " (frente= P[" + getFrente() + "], final= P[" + getFinalIdx() + "], tam= " + getTamano() + "/" + getCapacidad() + "):");
+        if (estaVacia()) {
+            System.out.println("    (vacia)");
+        } else {
+            int idx = getFrente();
+            for (int k = 0; k < getTamano(); k++) {
+                System.out.println("    P[" + idx + "]= " + getArregloDatos()[idx]);
+                if (isCircular()) {
+                    idx = (idx + 1) % getCapacidad();
+                } else {
+                    idx++;
+                }
             }
         }
-        System.out.println("]");
     }
 
     public void inicializar(int cap, boolean esCircular) {
@@ -921,14 +1159,14 @@ class ColaTAD {
         System.out.println("2. Ejecucion paso a paso:");
         setCapacidad(cap);
         setCircular(esCircular);
-        setDatos(new int[cap]);
+        setArregloDatos(new int[cap]);
         setFrente(0);
         setFinalIdx(-1);
         setTamano(0);
-        System.out.println("  Cola inicializada (circular=" + esCircular + ", cap=" + cap + ").");
+        System.out.println("  Cola inicializada (circular= " + esCircular + ", cap= " + cap + ").");
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  frente=" + getFrente() + ", finalIdx=" + getFinalIdx() + ", tamano=" + getTamano());
+        System.out.println("  frente= P[" + getFrente() + "], finalIdx= P[" + getFinalIdx() + "], tamano= " + getTamano());
 
         System.out.println("4. Estado final:");
         imprimirCola("Despues");
@@ -945,20 +1183,20 @@ class ColaTAD {
             if (isCircular()) {
                 int sig = (getFinalIdx() + 1) % getCapacidad();
                 setFinalIdx(sig);
-                getDatos()[sig] = valor;
+                getArregloDatos()[sig] = valor;
                 setTamano(getTamano() + 1);
-                System.out.println("  Circular: finalIdx=" + sig + ", inserta " + valor);
+                System.out.println("  Circular: finalIdx= P[" + sig + "], inserta " + valor);
             } else {
                 int sig = getFinalIdx() + 1;
                 setFinalIdx(sig);
-                getDatos()[sig] = valor;
+                getArregloDatos()[sig] = valor;
                 setTamano(getTamano() + 1);
-                System.out.println("  Simple: finalIdx=" + sig + ", inserta " + valor);
+                System.out.println("  Simple: finalIdx= P[" + sig + "], inserta " + valor);
             }
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  valor=" + valor + ", frente=" + getFrente() + ", finalIdx=" + getFinalIdx() + ", tamano=" + getTamano());
+        System.out.println("  valor= " + valor + ", frente= P[" + getFrente() + "], finalIdx= P[" + getFinalIdx() + "], tamano= " + getTamano());
 
         System.out.println("4. Estado final:");
         imprimirCola("Despues de enqueue");
@@ -973,10 +1211,10 @@ class ColaTAD {
         if (estaVacia()) {
             System.out.println("  Error: subdesbordamiento, cola vacia.");
         } else {
-            ret = getDatos()[getFrente()];
-            getDatos()[getFrente()] = 0;
+            ret = getArregloDatos()[getFrente()];
+            getArregloDatos()[getFrente()] = 0;
             setTamano(getTamano() - 1);
-            System.out.println("  Retira " + ret + " de frente=" + getFrente());
+            System.out.println("  Retira " + ret + " de P[" + getFrente() + "]");
             if (isCircular()) {
                 if (getTamano() == 0) {
                     setFrente(0);
@@ -990,7 +1228,7 @@ class ColaTAD {
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  ret=" + ret + ", frente=" + getFrente() + ", finalIdx=" + getFinalIdx() + ", tamano=" + getTamano());
+        System.out.println("  ret= " + ret + ", frente= P[" + getFrente() + "], finalIdx= P[" + getFinalIdx() + "], tamano= " + getTamano());
 
         System.out.println("4. Estado final:");
         imprimirCola("Despues de dequeue");
@@ -1005,12 +1243,12 @@ class ColaTAD {
         if (estaVacia()) {
             System.out.println("  Cola vacia.");
         } else {
-            val = getDatos()[getFrente()];
-            System.out.println("  Frente en indice " + getFrente() + " = " + val);
+            val = getArregloDatos()[getFrente()];
+            System.out.println("  Frente en P[" + getFrente() + "]= " + val);
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  frente=" + getFrente() + ", val=" + val + ", tamano=" + getTamano());
+        System.out.println("  frente= P[" + getFrente() + "], val= " + val + ", tamano= " + getTamano());
 
         System.out.println("4. Estado final:");
         imprimirCola("Final");
@@ -1023,10 +1261,10 @@ class ColaTAD {
         System.out.println("2. Ejecucion paso a paso:");
         boolean v = estaVacia();
         boolean l = estaLlena();
-        System.out.println("  estaVacia=" + v + ", estaLlena=" + l);
+        System.out.println("  estaVacia= " + v + ", estaLlena= " + l);
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  frente=" + getFrente() + ", finalIdx=" + getFinalIdx() + ", tamano=" + getTamano());
+        System.out.println("  frente= P[" + getFrente() + "], finalIdx= P[" + getFinalIdx() + "], tamano= " + getTamano());
 
         System.out.println("4. Estado final:");
         imprimirCola("Final");
@@ -1043,7 +1281,7 @@ class ColaTAD {
             System.out.println("  Cola vacia.");
         } else {
             for (k = 0; k < getTamano(); k++) {
-                System.out.println("  FIFO #" + (k + 1) + " (idx " + idx + "): " + getDatos()[idx]);
+                System.out.println("  FIFO #" + (k + 1) + " -> P[" + idx + "]= " + getArregloDatos()[idx]);
                 if (isCircular()) {
                     idx = (idx + 1) % getCapacidad();
                 } else {
@@ -1053,7 +1291,7 @@ class ColaTAD {
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  k=" + k + ", idx=" + idx + ", frente=" + getFrente() + ", finalIdx=" + getFinalIdx());
+        System.out.println("  k= " + k + ", idx= P[" + idx + "], frente= P[" + getFrente() + "], finalIdx= P[" + getFinalIdx() + "]");
 
         System.out.println("4. Estado final:");
         imprimirCola("Final FIFO");
@@ -1065,7 +1303,7 @@ class ColaTAD {
 // ============================================================================
 class BicolaTAD {
 
-    private int[] datos;
+    private int[] arregloDatos;
     private int frente;
     private int finalIdx;
     private int tamano;
@@ -1076,18 +1314,18 @@ class BicolaTAD {
             cap = 1;
         }
         this.capacidad = cap;
-        this.datos = new int[cap];
+        this.arregloDatos = new int[cap];
         this.frente = 0;
         this.finalIdx = -1;
         this.tamano = 0;
     }
 
-    public int[] getDatos() {
-        return this.datos;
+    public int[] getArregloDatos() {
+        return this.arregloDatos;
     }
 
-    public void setDatos(int[] datos) {
-        this.datos = datos;
+    public void setArregloDatos(int[] arregloDatos) {
+        this.arregloDatos = arregloDatos;
     }
 
     public int getFrente() {
@@ -1143,16 +1381,16 @@ class BicolaTAD {
     }
 
     private void imprimirBicola(String etiqueta) {
-        System.out.print(etiqueta + " [" + estadoActual() + "] (frente=" + getFrente() + ", final=" + getFinalIdx() + ", tam=" + getTamano() + "/" + getCapacidad() + "): [");
-        int idx = getFrente();
-        for (int k = 0; k < getTamano(); k++) {
-            System.out.print(getDatos()[idx]);
-            if (k < getTamano() - 1) {
-                System.out.print(", ");
+        System.out.println("  " + etiqueta + " [" + estadoActual() + "] (frente= P[" + getFrente() + "], final= P[" + getFinalIdx() + "], tam= " + getTamano() + "/" + getCapacidad() + "):");
+        if (estaVacia()) {
+            System.out.println("    (vacia)");
+        } else {
+            int idx = getFrente();
+            for (int k = 0; k < getTamano(); k++) {
+                System.out.println("    P[" + idx + "]= " + getArregloDatos()[idx]);
+                idx = (idx + 1) % getCapacidad();
             }
-            idx = (idx + 1) % getCapacidad();
         }
-        System.out.println("]");
     }
 
     public void inicializar(int cap) {
@@ -1161,14 +1399,14 @@ class BicolaTAD {
 
         System.out.println("2. Ejecucion paso a paso:");
         setCapacidad(cap);
-        setDatos(new int[cap]);
+        setArregloDatos(new int[cap]);
         setFrente(0);
         setFinalIdx(-1);
         setTamano(0);
         System.out.println("  Bicola inicializada con capacidad " + cap + ".");
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  frente=" + getFrente() + ", finalIdx=" + getFinalIdx() + ", tamano=" + getTamano());
+        System.out.println("  frente= P[" + getFrente() + "], finalIdx= P[" + getFinalIdx() + "], tamano= " + getTamano());
 
         System.out.println("4. Estado final:");
         imprimirBicola("Despues");
@@ -1185,19 +1423,20 @@ class BicolaTAD {
             if (estaVacia()) {
                 setFrente(0);
                 setFinalIdx(0);
-                getDatos()[0] = valor;
+                getArregloDatos()[0] = valor;
                 setTamano(1);
+                System.out.println("  Insertado P[0]= " + valor + " por el frente.");
             } else {
                 int nuevoF = (getFrente() - 1 + getCapacidad()) % getCapacidad();
                 setFrente(nuevoF);
-                getDatos()[nuevoF] = valor;
+                getArregloDatos()[nuevoF] = valor;
                 setTamano(getTamano() + 1);
+                System.out.println("  Insertado P[" + nuevoF + "]= " + valor + " por el frente.");
             }
-            System.out.println("  Insertado " + valor + " por el frente.");
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  valor=" + valor + ", frente=" + getFrente() + ", finalIdx=" + getFinalIdx() + ", tamano=" + getTamano());
+        System.out.println("  valor= " + valor + ", frente= P[" + getFrente() + "], finalIdx= P[" + getFinalIdx() + "], tamano= " + getTamano());
 
         System.out.println("4. Estado final:");
         imprimirBicola("Despues insertar frente");
@@ -1214,19 +1453,20 @@ class BicolaTAD {
             if (estaVacia()) {
                 setFrente(0);
                 setFinalIdx(0);
-                getDatos()[0] = valor;
+                getArregloDatos()[0] = valor;
                 setTamano(1);
+                System.out.println("  Insertado P[0]= " + valor + " por el final.");
             } else {
                 int nuevoFin = (getFinalIdx() + 1) % getCapacidad();
                 setFinalIdx(nuevoFin);
-                getDatos()[nuevoFin] = valor;
+                getArregloDatos()[nuevoFin] = valor;
                 setTamano(getTamano() + 1);
+                System.out.println("  Insertado P[" + nuevoFin + "]= " + valor + " por el final.");
             }
-            System.out.println("  Insertado " + valor + " por el final.");
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  valor=" + valor + ", frente=" + getFrente() + ", finalIdx=" + getFinalIdx() + ", tamano=" + getTamano());
+        System.out.println("  valor= " + valor + ", frente= P[" + getFrente() + "], finalIdx= P[" + getFinalIdx() + "], tamano= " + getTamano());
 
         System.out.println("4. Estado final:");
         imprimirBicola("Despues insertar final");
@@ -1241,7 +1481,8 @@ class BicolaTAD {
         if (estaVacia()) {
             System.out.println("  Error: bicola vacia.");
         } else {
-            elim = getDatos()[getFrente()];
+            elim = getArregloDatos()[getFrente()];
+            getArregloDatos()[getFrente()] = 0;
             if (getTamano() == 1) {
                 setFrente(0);
                 setFinalIdx(-1);
@@ -1254,7 +1495,7 @@ class BicolaTAD {
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  elim=" + elim + ", frente=" + getFrente() + ", finalIdx=" + getFinalIdx() + ", tamano=" + getTamano());
+        System.out.println("  elim= " + elim + ", frente= P[" + getFrente() + "], finalIdx= P[" + getFinalIdx() + "], tamano= " + getTamano());
 
         System.out.println("4. Estado final:");
         imprimirBicola("Despues eliminar frente");
@@ -1269,7 +1510,8 @@ class BicolaTAD {
         if (estaVacia()) {
             System.out.println("  Error: bicola vacia.");
         } else {
-            elim = getDatos()[getFinalIdx()];
+            elim = getArregloDatos()[getFinalIdx()];
+            getArregloDatos()[getFinalIdx()] = 0;
             if (getTamano() == 1) {
                 setFrente(0);
                 setFinalIdx(-1);
@@ -1282,7 +1524,7 @@ class BicolaTAD {
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  elim=" + elim + ", frente=" + getFrente() + ", finalIdx=" + getFinalIdx() + ", tamano=" + getTamano());
+        System.out.println("  elim= " + elim + ", frente= P[" + getFrente() + "], finalIdx= P[" + getFinalIdx() + "], tamano= " + getTamano());
 
         System.out.println("4. Estado final:");
         imprimirBicola("Despues eliminar final");
@@ -1298,13 +1540,13 @@ class BicolaTAD {
         if (estaVacia()) {
             System.out.println("  Bicola vacia.");
         } else {
-            vf = getDatos()[getFrente()];
-            vr = getDatos()[getFinalIdx()];
-            System.out.println("  Frente=" + vf + ", Final=" + vr);
+            vf = getArregloDatos()[getFrente()];
+            vr = getArregloDatos()[getFinalIdx()];
+            System.out.println("  Frente P[" + getFrente() + "]= " + vf + ", Final P[" + getFinalIdx() + "]= " + vr);
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  vf=" + vf + ", vr=" + vr + ", tamano=" + getTamano() + ", estado=" + estadoActual());
+        System.out.println("  vf= " + vf + ", vr= " + vr + ", tamano= " + getTamano() + ", estado= " + estadoActual());
 
         System.out.println("4. Estado final:");
         imprimirBicola("Final");
@@ -1347,7 +1589,7 @@ class ModuloRecursion {
         long res = factRec(n);
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  n=" + n + ", res=" + res);
+        System.out.println("  n= " + n + ", res= " + res);
 
         System.out.println("4. Estado final:");
         System.out.println("  Resultado: " + n + "! = " + res);
@@ -1368,7 +1610,7 @@ class ModuloRecursion {
         long res = potRec(b, e);
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  b=" + b + ", e=" + e + ", res=" + res);
+        System.out.println("  b= " + b + ", e= " + e + ", res= " + res);
 
         System.out.println("4. Estado final:");
         System.out.println("  Resultado: " + b + "^" + e + " = " + res);
@@ -1376,29 +1618,30 @@ class ModuloRecursion {
 
     public void simularFactorialConPila(int n) {
         System.out.println("\n1. Estado inicial:");
-        System.out.println("  Simulacion factorial(" + n + ") con pila explicita vacia (tope=-1).");
+        System.out.println("  Simulacion factorial(" + n + ") con pila explicita vacia (tope= P[-1]).");
 
         System.out.println("2. Ejecucion paso a paso:");
-        int[] pila = new int[n + 2];
+        int[] arregloPila = new int[n + 2];
         int tope = -1;
 
         for (int actual = n; actual >= 1; actual--) {
             tope++;
-            pila[tope] = actual;
-            System.out.println("  Apila n=" + actual + " (tope=" + tope + ")");
+            arregloPila[tope] = actual;
+            System.out.println("  Apila P[" + tope + "]= " + actual);
         }
         System.out.println("  Caso base retorna 1.");
 
         long acum = 1L;
         while (tope >= 0) {
-            int val = pila[tope];
+            int val = arregloPila[tope];
+            System.out.println("  Desapila P[" + tope + "]= " + val);
             tope--;
             acum = acum * val;
-            System.out.println("  Desapila n=" + val + " -> acum=" + acum + " (tope=" + tope + ")");
+            System.out.println("    acum= " + acum + " (tope= P[" + tope + "])");
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  n=" + n + ", tope=" + tope + ", acum=" + acum);
+        System.out.println("  n= " + n + ", tope= P[" + tope + "], acum= " + acum);
 
         System.out.println("4. Estado final:");
         System.out.println("  Resultado simulado: " + acum);
@@ -1466,16 +1709,19 @@ class ListaSimple {
     }
 
     private void imprimirLista(String etiqueta) {
-        System.out.print(etiqueta + " (tam=" + getTamano() + ", vacia=" + estaVacia() + "): ");
+        System.out.println("  " + etiqueta + " (tam= " + getTamano() + ", vacia= " + estaVacia() + "):");
         NodoLista aux = getCabeza();
-        while (aux != null) {
-            System.out.print("[" + aux.getDato() + "]");
-            if (aux.getSiguiente() != null) {
-                System.out.print(" -> ");
+        int pos = 0;
+        if (aux == null) {
+            System.out.println("    (vacia -> null)");
+        } else {
+            while (aux != null) {
+                System.out.println("    P[" + pos + "]= " + aux.getDato());
+                aux = aux.getSiguiente();
+                pos++;
             }
-            aux = aux.getSiguiente();
+            System.out.println("    Fin -> null");
         }
-        System.out.println(" -> null");
     }
 
     public void inicializarVacia() {
@@ -1485,10 +1731,10 @@ class ListaSimple {
         System.out.println("2. Ejecucion paso a paso:");
         setCabeza(null);
         setTamano(0);
-        System.out.println("  cabeza=null, tamano=0.");
+        System.out.println("  cabeza= null, tamano= 0.");
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  tamano=" + getTamano() + ", vacia=" + estaVacia());
+        System.out.println("  tamano= " + getTamano() + ", vacia= " + estaVacia());
 
         System.out.println("4. Estado final:");
         imprimirLista("Despues");
@@ -1503,10 +1749,10 @@ class ListaSimple {
         nuevo.setSiguiente(getCabeza());
         setCabeza(nuevo);
         setTamano(getTamano() + 1);
-        System.out.println("  Nuevo nodo [" + valor + "] enlazado a cabeza.");
+        System.out.println("  Nuevo nodo P[0]= " + valor + " enlazado a cabeza.");
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  valor=" + valor + ", tamano=" + getTamano());
+        System.out.println("  valor= " + valor + ", tamano= " + getTamano());
 
         System.out.println("4. Estado final:");
         imprimirLista("Despues insertar inicio");
@@ -1523,19 +1769,19 @@ class ListaSimple {
 
         if (estaVacia()) {
             setCabeza(nuevo);
-            System.out.println("  Lista vacia: cabeza apuntara a [" + valor + "].");
+            System.out.println("  Lista vacia: cabeza apuntara a P[0]= " + valor + ".");
         } else {
             while (actual.getSiguiente() != null) {
                 actual = actual.getSiguiente();
                 pasos++;
             }
             actual.setSiguiente(nuevo);
-            System.out.println("  Avanza " + pasos + " pasos y enlaza [" + valor + "] al final.");
+            System.out.println("  Avanza " + pasos + " pasos y enlaza P[" + (pasos + 1) + "]= " + valor + " al final.");
         }
         setTamano(getTamano() + 1);
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  pasos=" + pasos + ", tamano=" + getTamano());
+        System.out.println("  pasos= " + pasos + ", tamano= " + getTamano());
 
         System.out.println("4. Estado final:");
         imprimirLista("Despues insertar final");
@@ -1543,7 +1789,7 @@ class ListaSimple {
 
     public void insertarEnPosicion(int valor, int pos) {
         System.out.println("\n1. Estado inicial:");
-        imprimirLista("Antes insertar " + valor + " en pos " + pos);
+        imprimirLista("Antes insertar " + valor + " en P[" + pos + "]");
 
         System.out.println("2. Ejecucion paso a paso:");
         int idx = 0;
@@ -1551,14 +1797,14 @@ class ListaSimple {
         NodoLista anterior = null;
 
         if (pos < 0 || pos > getTamano()) {
-            System.out.println("  Error: posicion invalida (" + pos + ").");
+            System.out.println("  Error: posicion invalida P[" + pos + "].");
         } else {
             if (pos == 0) {
                 NodoLista nuevo = new NodoLista(valor);
                 nuevo.setSiguiente(getCabeza());
                 setCabeza(nuevo);
                 setTamano(getTamano() + 1);
-                System.out.println("  Inserta [" + valor + "] en posicion 0.");
+                System.out.println("  Inserta P[0]= " + valor + ".");
             } else {
                 for (idx = 0; idx < pos && actual != null; idx++) {
                     anterior = actual;
@@ -1570,12 +1816,12 @@ class ListaSimple {
                     anterior.setSiguiente(nuevo);
                 }
                 setTamano(getTamano() + 1);
-                System.out.println("  Inserta [" + valor + "] en posicion " + pos + ".");
+                System.out.println("  Inserta P[" + pos + "]= " + valor + ".");
             }
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  pos=" + pos + ", idx=" + idx + ", tamano=" + getTamano());
+        System.out.println("  pos= " + pos + ", idx= " + idx + ", tamano= " + getTamano());
 
         System.out.println("4. Estado final:");
         imprimirLista("Despues insertar posicion");
@@ -1592,14 +1838,14 @@ class ListaSimple {
             System.out.println("  Lista vacia.");
         } else {
             while (actual != null) {
-                System.out.println("  Pos " + pos + ": dato=" + actual.getDato());
+                System.out.println("  P[" + pos + "]= " + actual.getDato());
                 actual = actual.getSiguiente();
                 pos++;
             }
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  pos=" + pos + ", tamano=" + getTamano());
+        System.out.println("  pos= " + pos + ", tamano= " + getTamano());
 
         System.out.println("4. Estado final:");
         imprimirLista("Final");
@@ -1617,13 +1863,13 @@ class ListaSimple {
 
         while (actual != null) {
             if (actual.getDato() == objetivo) {
-                System.out.println("  Encontrado " + objetivo + " en pos " + pos);
+                System.out.println("  Encontrado " + objetivo + " en P[" + pos + "]");
                 if (!encontrado) {
                     encontrado = true;
                     posHallada = pos;
                 }
             } else {
-                System.out.println("  Pos " + pos + " (dato=" + actual.getDato() + ") no coincide");
+                System.out.println("  P[" + pos + "]= " + actual.getDato() + " (no coincide)");
             }
             actual = actual.getSiguiente();
             pos++;
@@ -1633,7 +1879,7 @@ class ListaSimple {
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  objetivo=" + objetivo + ", encontrado=" + encontrado + ", posHallada=" + posHallada);
+        System.out.println("  objetivo= " + objetivo + ", encontrado= " + encontrado + ", posHallada= P[" + posHallada + "]");
 
         System.out.println("4. Estado final:");
         imprimirLista("Final");
@@ -1662,7 +1908,7 @@ class ListaSimple {
                     actual.setSiguiente(null);
                     setTamano(getTamano() - 1);
                     eliminado = true;
-                    System.out.println("  Eliminado valor " + objetivo + " en pos " + pos);
+                    System.out.println("  Eliminado valor " + objetivo + " en P[" + pos + "]");
                 } else {
                     anterior = actual;
                     actual = actual.getSiguiente();
@@ -1675,7 +1921,7 @@ class ListaSimple {
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  objetivo=" + objetivo + ", eliminado=" + eliminado + ", pos=" + pos + ", tamano=" + getTamano());
+        System.out.println("  objetivo= " + objetivo + ", eliminado= " + eliminado + ", pos= P[" + pos + "], tamano= " + getTamano());
 
         System.out.println("4. Estado final:");
         imprimirLista("Despues eliminar valor");
@@ -1683,7 +1929,7 @@ class ListaSimple {
 
     public void eliminarPorPosicion(int pos) {
         System.out.println("\n1. Estado inicial:");
-        imprimirLista("Antes eliminar pos " + pos);
+        imprimirLista("Antes eliminar P[" + pos + "]");
 
         System.out.println("2. Ejecucion paso a paso:");
         NodoLista actual = getCabeza();
@@ -1695,7 +1941,7 @@ class ListaSimple {
             System.out.println("  Error: lista vacia.");
         } else {
             if (pos < 0 || pos >= getTamano()) {
-                System.out.println("  Error: posicion invalida (" + pos + ").");
+                System.out.println("  Error: posicion invalida P[" + pos + "].");
             } else {
                 for (idx = 0; idx < pos && actual != null; idx++) {
                     anterior = actual;
@@ -1710,13 +1956,13 @@ class ListaSimple {
                     }
                     actual.setSiguiente(null);
                     setTamano(getTamano() - 1);
-                    System.out.println("  Eliminado nodo en pos " + pos + " (dato=" + datoElim + ")");
+                    System.out.println("  Eliminado nodo en P[" + pos + "]= " + datoElim);
                 }
             }
         }
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  pos=" + pos + ", idx=" + idx + ", datoElim=" + datoElim + ", tamano=" + getTamano());
+        System.out.println("  pos= P[" + pos + "], idx= P[" + idx + "], datoElim= " + datoElim + ", tamano= " + getTamano());
 
         System.out.println("4. Estado final:");
         imprimirLista("Despues eliminar posicion");
@@ -1730,7 +1976,7 @@ class ListaSimple {
         System.out.println("  Esta vacia: " + estaVacia() + " | Cantidad: " + getTamano());
 
         System.out.println("3. Variables auxiliares:");
-        System.out.println("  tamano=" + getTamano() + ", vacia=" + estaVacia());
+        System.out.println("  tamano= " + getTamano() + ", vacia= " + estaVacia());
 
         System.out.println("4. Estado final:");
         imprimirLista("Final");
